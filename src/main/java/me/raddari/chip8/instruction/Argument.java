@@ -1,6 +1,8 @@
 package me.raddari.chip8.instruction;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class Argument {
 
@@ -40,6 +42,20 @@ public final class Argument {
 
         public @NotNull String getPrefix() {
             return prefix;
+        }
+
+        @Contract("null -> null")
+        public static @Nullable ArgType decode(@Nullable String pattern) {
+            if (pattern == null) {
+                return null;
+            }
+
+            return switch (pattern) {
+                case "NNN" -> ADDRESS;
+                case "NN", "N" -> CONSTANT;
+                case "X", "Y" -> REGISTER;
+                default -> null;
+            };
         }
 
     }
