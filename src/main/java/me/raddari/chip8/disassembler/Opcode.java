@@ -5,7 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ? Future: this enum badly needs refactoring
@@ -59,12 +62,13 @@ public enum Opcode {
         var argTypes = new ArrayList<Argument.ArgType>();
         var op = name();
 
-        for (var entry : ARG_PATTERNS.entrySet()) {
-            if (op.contains(entry.getKey())) {
-                argTypes.add(entry.getValue());
-                op = op.replace(entry.getKey(), "");
+        for (var s : List.of("NNN", "NN", "N", "X", "Y")) {
+            if (op.contains(s)) {
+                argTypes.add(Argument.ArgType.decode(s));
+                op = op.replace(s, "");
             }
         }
+
         return argTypes;
     }
 
@@ -146,17 +150,6 @@ public enum Opcode {
             var hash3 = hash3(op.name());
             OPCODE_HASH3_LOOKUP.put(hash3, op);
         }
-    }
-
-    private static final Map<String, Argument.ArgType> ARG_PATTERNS;
-
-    static {
-        ARG_PATTERNS = new LinkedHashMap<>();
-        ARG_PATTERNS.put("NNN", Argument.ArgType.ADDRESS);
-        ARG_PATTERNS.put("NN", Argument.ArgType.CONSTANT);
-        ARG_PATTERNS.put("N", Argument.ArgType.CONSTANT);
-        ARG_PATTERNS.put("X", Argument.ArgType.REGISTER);
-        ARG_PATTERNS.put("Y", Argument.ArgType.REGISTER);
     }
 
 }
