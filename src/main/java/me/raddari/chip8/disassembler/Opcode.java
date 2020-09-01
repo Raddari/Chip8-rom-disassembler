@@ -1,12 +1,15 @@
 package me.raddari.chip8.disassembler;
 
+import me.raddari.chip8.instruction.Argument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * ? Future: this enum badly needs refactoring
+ */
 @SuppressWarnings("java:S115")
 public enum Opcode {
 
@@ -21,13 +24,19 @@ public enum Opcode {
     $7XNN("add"),  $8XY4("add"),  $8XY5("sub"),
     $8XY7("subn"), $8XY1("or"),   $8XY2("and"),
     $8XY3("xor"),  $8XY6("shr"),  $8XYE("shl"),
-    $FX33("bcd"),  $CXNN("rnd"),  $DXYN("drw");
+    $FX33("bcd"), $CXNN("rnd"), $DXYN("drw");
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final String symbol;
+    private final List<Argument.ArgType> argTypes;
 
     Opcode(@NotNull String symbol) {
         this.symbol = symbol;
+        this.argTypes = createArgTypes();
+    }
+
+    public List<Argument.ArgType> opcodeArgTypes() {
+        return new ArrayList<>(argTypes);
     }
 
     public @NotNull String getAssemblySymbol() {
@@ -44,6 +53,19 @@ public enum Opcode {
             case 'f' -> findF(opcode);
             default -> OPCODE_HASH1_LOOKUP.getOrDefault(hash1(opcode), $0000);
         };
+    }
+
+    private List<Argument.ArgType> createArgTypes() {
+        var argTypes = new ArrayList<Argument.ArgType>();
+        var op = name();
+
+        for (var entry : ARG_PATTERNS.entrySet()) {
+            if (op.contains(entry.getKey())) {
+                argTypes.add(entry.getValue());
+                op = op.replace(entry.getKey(), "");
+            }
+        }
+        return argTypes;
     }
 
     private static String formatOpcode(String opcode) {
@@ -108,6 +130,7 @@ public enum Opcode {
     private static final Map<String, Opcode> OPCODE_HASH1_LOOKUP;
     private static final Map<String, Opcode> OPCODE_HASH2_LOOKUP;
     private static final Map<String, Opcode> OPCODE_HASH3_LOOKUP;
+
     static {
         OPCODE_HASH1_LOOKUP = new HashMap<>();
         OPCODE_HASH2_LOOKUP = new HashMap<>();
@@ -123,6 +146,17 @@ public enum Opcode {
             var hash3 = hash3(op.name());
             OPCODE_HASH3_LOOKUP.put(hash3, op);
         }
+    }
+
+    private static final Map<String, Argument.ArgType> ARG_PATTERNS;
+
+    static {
+        ARG_PATTERNS = new LinkedHashMap<>();
+        ARG_PATTERNS.put("NNN", Argument.ArgType.ADDRESS);
+        ARG_PATTERNS.put("NN", Argument.ArgType.CONSTANT);
+        ARG_PATTERNS.put("N", Argument.ArgType.CONSTANT);
+        ARG_PATTERNS.put("X", Argument.ArgType.REGISTER);
+        ARG_PATTERNS.put("Y", Argument.ArgType.REGISTER);
     }
 
 }
