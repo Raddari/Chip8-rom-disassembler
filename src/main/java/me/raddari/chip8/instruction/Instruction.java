@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 public final class Instruction {
 
@@ -26,7 +25,28 @@ public final class Instruction {
     }
 
     public @NotNull String toAssemblyString() {
-        return opcode.getAssemblySymbol();
+        var sb = new StringBuilder();
+        sb.append(opcode.getAssemblySymbol());
+
+        if (!args.isEmpty()) {
+            sb.append(" ");
+            for (var it = args.listIterator(); it.hasNext(); ) {
+                var element = it.next();
+                if (element.getArgType() == Argument.ArgType.REGISTER) {
+                    sb.append(Argument.ArgType.REGISTER.getPrefix())
+                            .append("r")
+                            .append(Integer.toHexString(element.getValue()));
+                } else {
+                    sb.append(element.getValue());
+                }
+
+                if (it.hasNext()) {
+                    sb.append(",");
+                }
+            }
+        }
+
+        return sb.toString();
     }
 
     @Override
