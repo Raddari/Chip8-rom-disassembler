@@ -50,21 +50,30 @@ class AsyncDisassembler implements Disassembler {
 
     private static void readData(@NotNull List<Instruction> dest, @NotNull File romFile) {
         try (var stream = new DataInputStream(new FileInputStream(romFile))) {
-            var buffer = new byte[2];
-            while (stream.read(buffer, 0, 2) > 0) {
-                var bytes = Numbers.bytesToHex(buffer);
-                dest.add(interpretBytes(bytes));
+            var raw = new byte[2];
+            while (stream.read(raw, 0, 2) > 0) {
+                var bytes = Numbers.bytesToHex(raw);
+                dest.add(interpretBytes(bytes, raw));
             }
         } catch (IOException e) {
             LOGGER.error("IOException occured reading file", e);
         }
     }
 
-    private static @NotNull Instruction interpretBytes(@NotNull String bytes) {
+    private static Instruction interpretBytes(String bytes, byte[] raw) {
         var opcode = Opcode.find(bytes);
         var args = new ArrayList<Argument>();
 
+        for (var argType : opcode.opcodeArgTypes()) {
+            var value = switch (argType) {
+                case ADDRESS -> (((int) raw[0]) & 0x0F) + (((int) raw[1]) & 0xFF);
+                case CONSTANT -> (((int) raw[1]) & 0xFF);
+                case REGX -> (((int) raw[0]) & 0x0F);
+                case REGY -> (((int) raw[1]) & 0xF0);
+            };
 
+            args.add(Argument.of(argType, value));
+        }
 
         return new Instruction(opcode, args);
     }

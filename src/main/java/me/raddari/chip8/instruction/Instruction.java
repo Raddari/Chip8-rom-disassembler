@@ -32,8 +32,9 @@ public final class Instruction {
             sb.append(" ");
             for (var it = args.listIterator(); it.hasNext(); ) {
                 var element = it.next();
-                if (element.getArgType() == Argument.ArgType.REGISTER) {
-                    sb.append(Argument.ArgType.REGISTER.getPrefix())
+                var argType = element.getArgType();
+                if (argType == Argument.ArgType.REGX || argType == Argument.ArgType.REGY) {
+                    sb.append(Argument.ArgType.REGX.getPrefix())
                             .append("r")
                             .append(Integer.toHexString(element.getValue()));
                 } else {

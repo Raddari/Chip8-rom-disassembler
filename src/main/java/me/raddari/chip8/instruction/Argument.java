@@ -28,7 +28,7 @@ public final class Argument {
 
 
     public enum ArgType {
-        ADDRESS(), CONSTANT(), REGISTER("#");
+        ADDRESS(), CONSTANT(), REGX("#"), REGY("#");
 
         private final String prefix;
 
@@ -53,7 +53,8 @@ public final class Argument {
             return switch (pattern) {
                 case "NNN" -> ADDRESS;
                 case "NN", "N" -> CONSTANT;
-                case "X", "Y" -> REGISTER;
+                case "X" -> REGX;
+                case "Y" -> REGY;
                 default -> null;
             };
         }
