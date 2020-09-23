@@ -8,9 +8,9 @@ import java.io.File;
 public final class Main {
 
     public static void main(String[] args) {
-        var romFile = new File(Main.class.getResource("rom/RandomNumberTest.ch8").getPath());
+        var romPath = Main.class.getClassLoader().getResource("rom/RandomNumberTest.ch8").getPath();
         Disassembler.create()
-                .disassemble(romFile)
+                .disassemble(new File(romPath))
                 .stream()
                 .map(Opcode::toAssemblyString)
                 .forEach(System.out::println);
