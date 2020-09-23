@@ -2,16 +2,28 @@
 <Configuration status="INFO">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d{HH:mm:ss}](%level): %msg%n"/>
+            <PatternLayout pattern="%highlight{(%d{ddMMMYYYY HH:mm:ss.SSS})[%c{2.}][%t/%level]: %msg%n}"
+                           disableAnsi="false"/>
         </Console>
-        <File name="MyFile" fileName="all.log" immediateFlush="false" append="false">
-            <PatternLayout pattern="[%d{HH:mm:ss}](%t/%level): %msg%n"/>
+        <File name="DebugLog" fileName="run/logs/debug.log" immediateFlush="false" append="false">
+            <PatternLayout pattern="(%d{ddMMMYYYY HH:mm:ss.SSS})[%c][%t/%level]: %msg%n"/>
+            <ThresholdFilter level="debug"/>
+        </File>
+        <File name="LatestLog" fileName="run/logs/latest.log" immediateFlush="false" append="false">
+            <PatternLayout pattern="(%d{ddMMMYYYY HH:mm:ss.SSS})[%c][%t/%level]: %msg%n"/>
+            <ThresholdFilter level="info"/>
         </File>
     </Appenders>
     <Loggers>
+        <Logger name="me.raddari.gl" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="DebugLog"/>
+            <AppenderRef ref="LatestLog"/>
+        </Logger>
         <Root level="debug">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="MyFile"/>
+            <AppenderRef ref="DebugLog"/>
+            <AppenderRef ref="LatestLog"/>
         </Root>
     </Loggers>
 </Configuration>
