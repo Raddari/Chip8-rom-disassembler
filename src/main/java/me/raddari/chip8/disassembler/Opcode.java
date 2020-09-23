@@ -117,6 +117,11 @@ public final class Opcode {
         public @NotNull String getSymbol() {
             return symbol;
         }
+
+        public @NotNull List<Argument.Type> getArgTypes() {
+            return List.copyOf(argTypes);
+        }
+
     }
 
 }
