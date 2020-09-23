@@ -61,6 +61,7 @@ public final class Opcode {
                 .toString();
     }
 
+    @SuppressWarnings("java:S115") // Constant naming conventions
     public enum Kind {
 
         $0000("nop"), $00E0("cls"), $00EE("ret"),
