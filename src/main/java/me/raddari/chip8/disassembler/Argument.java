@@ -19,7 +19,7 @@ public final class Argument {
         this.value = value;
     }
 
-    public Type getType() {
+    public @NotNull Type getType() {
         return type;
     }
 
