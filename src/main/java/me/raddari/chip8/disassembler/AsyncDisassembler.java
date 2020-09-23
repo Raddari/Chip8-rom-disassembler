@@ -78,6 +78,11 @@ final class AsyncDisassembler implements Disassembler {
             args.add(createArgument(argType, values));
         }
 
+        LOGGER.debug("Registered {} args for opcode {}", args.size(), kind);
+        for (var arg : args) {
+            LOGGER.debug("{}: {}", arg.getType(), arg.getValue());
+        }
+
         return args;
     }
 
