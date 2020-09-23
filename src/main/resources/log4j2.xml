@@ -15,7 +15,7 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="me.raddari.gl" level="debug" additivity="false">
+        <Logger name="me.raddari.chip8" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="DebugLog"/>
             <AppenderRef ref="LatestLog"/>
