@@ -100,15 +100,17 @@ public final class Opcode {
 
             if (id.contains("NNN")) {
                 argTypes.add(Argument.Type.ADDRESS);
-            } else if (id.contains("NN") || id.contains("N")) {
-                argTypes.add(Argument.Type.CONSTANT);
+            } else if (id.contains("NN")) {
+                argTypes.add(Argument.Type.CONSTANT_8);
+            } else if (id.contains("N")) {
+                argTypes.add(Argument.Type.CONSTANT_4);
             }
 
             if (id.contains("X")) {
-                argTypes.add(Argument.Type.REGISTER);
+                argTypes.add(Argument.Type.REGISTER_X);
             }
             if (id.contains("Y")) {
-                argTypes.add(Argument.Type.REGISTER);
+                argTypes.add(Argument.Type.REGISTER_Y);
             }
 
             return args;

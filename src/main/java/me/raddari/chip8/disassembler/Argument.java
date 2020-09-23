@@ -54,7 +54,7 @@ public final class Argument {
     }
 
     public enum Type {
-        ADDRESS, REGISTER, CONSTANT
+        ADDRESS, CONSTANT_4, CONSTANT_8, REGISTER_X, REGISTER_Y
     }
 
 }
