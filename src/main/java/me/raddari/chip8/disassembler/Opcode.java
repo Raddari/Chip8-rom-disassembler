@@ -1,8 +1,11 @@
 package me.raddari.chip8.disassembler;
 
 import com.google.common.base.MoreObjects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +24,7 @@ public final class Opcode {
     }
 
     public @NotNull String toAssemblyString() {
-        return "";
+        return kind.name();
     }
 
     public @NotNull Kind getKind() {
@@ -60,6 +63,59 @@ public final class Opcode {
 
     public enum Kind {
 
+        $0000("nop"), $00E0("cls"), $00EE("ret"),
+        $0NNN("sys"), $2NNN("call"), $1NNN("jp"),
+        $BNNN("jp"), $3XNN("se"), $4XNN("sne"),
+        $5XY0("se"), $9XY0("sne"), $EX9E("skp"),
+        $EXA1("sknp"), $FX0A("ld"), $6XNN("ld"),
+        $8XY0("ld"), $FX07("ld"), $FX15("ld"),
+        $FX18("ld"), $ANNN("ld"), $FX29("ld"),
+        $FX55("ld"), $FX65("ld"), $FX1E("add"),
+        $7XNN("add"), $8XY4("add"), $8XY5("sub"),
+        $8XY7("subn"), $8XY1("or"), $8XY2("and"),
+        $8XY3("xor"), $8XY6("shr"), $8XYE("shl"),
+        $FX33("bcd"), $CXNN("rnd"), $DXYN("drw");
+
+        private static final Logger LOGGER = LogManager.getLogger();
+        private final String symbol;
+        private final List<Argument.Type> argTypes;
+
+        Kind(@NotNull String symbol) {
+            this.symbol = symbol;
+            this.argTypes = generateArgTypes();
+        }
+
+        public static @NotNull Kind parseString(@NotNull String string) {
+            if (string.charAt(0) == '$') {
+                string = string.substring(1);
+            }
+            string = string.toLowerCase();
+            return $0000;
+        }
+
+        private List<Argument.Type> generateArgTypes() {
+            var args = new ArrayList<Argument.Type>();
+            var id = name().substring(1);
+
+            if (id.contains("NNN")) {
+                argTypes.add(Argument.Type.ADDRESS);
+            } else if (id.contains("NN") || id.contains("N")) {
+                argTypes.add(Argument.Type.CONSTANT);
+            }
+
+            if (id.contains("X")) {
+                argTypes.add(Argument.Type.REGISTER);
+            }
+            if (id.contains("Y")) {
+                argTypes.add(Argument.Type.REGISTER);
+            }
+
+            return args;
+        }
+
+        public @NotNull String getSymbol() {
+            return symbol;
+        }
     }
 
 }
