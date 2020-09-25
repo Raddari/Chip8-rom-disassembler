@@ -1,7 +1,7 @@
 package me.raddari.chip8;
 
 import me.raddari.chip8.disassembler.Disassembler;
-import me.raddari.chip8.instruction.Instruction;
+import me.raddari.chip8.disassembler.Opcode;
 
 import java.io.File;
 
@@ -12,7 +12,7 @@ public final class Main {
         Disassembler.create()
                 .disassemble(new File(romPath))
                 .stream()
-                .map(Instruction::toAssemblyString)
+                .map(Opcode::toAssemblyString)
                 .forEach(System.out::println);
     }
 

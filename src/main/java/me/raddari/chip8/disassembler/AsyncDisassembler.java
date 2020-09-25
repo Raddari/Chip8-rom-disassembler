@@ -1,8 +1,6 @@
 package me.raddari.chip8.disassembler;
 
 import com.google.common.base.Stopwatch;
-import me.raddari.chip8.instruction.Argument;
-import me.raddari.chip8.instruction.Instruction;
 import me.raddari.chip8.util.Numbers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,24 +11,30 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-class AsyncDisassembler implements Disassembler {
+final class AsyncDisassembler implements Disassembler {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int ADDRESS_MASK = 0x0FFF;
+    private static final int CONSTANT_8_MASK = 0x00FF;
+    private static final int CONSTANT_4_MASK = 0x000F;
+    private static final int REG_X_MASK = 0x0F00;
+    private static final int REG_Y_MASK = 0x00F0;
 
     @Override
-    public @NotNull List<Instruction> disassemble(@NotNull File romFile) {
+    public @NotNull List<Opcode> disassemble(@NotNull File romFile) {
         if (!romFile.isFile()) {
-            throw new IllegalArgumentException("romFile must point to a valid file");
+            LOGGER.error("romFile {} must point to a valid file", romFile.getPath());
+            return Collections.emptyList();
         }
-        var instructions = new ArrayList<Instruction>();
-        var ioThread = new Thread(() -> readData(instructions, romFile), "IOThread");
-
+        var opcodes = new ArrayList<Opcode>();
+        var ioThread = new Thread(() -> readData(opcodes, romFile), "IOThread");
         LOGGER.info("Reading {}", romFile.getName());
+
         var stopwatch = Stopwatch.createStarted();
         ioThread.start();
-
         while (ioThread.isAlive()) {
             try {
                 ioThread.join(1000);
@@ -41,41 +45,59 @@ class AsyncDisassembler implements Disassembler {
             }
         }
         stopwatch.stop();
+
         var elapsed = stopwatch.elapsed();
-
-        LOGGER.info("Read {} opcodes in {} millis", instructions.size(), elapsed.toMillis());
-
-        return instructions;
+        LOGGER.info("Read {} opcodes in {} millis", opcodes.size(), elapsed.toMillis());
+        return opcodes;
     }
 
-    private static void readData(@NotNull List<Instruction> dest, @NotNull File romFile) {
-        try (var stream = new DataInputStream(new FileInputStream(romFile))) {
-            var raw = new byte[2];
-            while (stream.read(raw, 0, 2) > 0) {
-                var bytes = Numbers.bytesToHex(raw);
-                dest.add(interpretBytes(bytes, raw));
+    private static void readData(List<? super Opcode> dest, File romFile) {
+        try (var reader = new DataInputStream(new FileInputStream(romFile))) {
+            var bytes = new byte[2];
+            while (reader.read(bytes, 0, 2) > 0) {
+                var opcode = bytesToOpcode(bytes);
+                dest.add(opcode);
             }
         } catch (IOException e) {
             LOGGER.error("IOException occured reading file", e);
         }
     }
 
-    private static Instruction interpretBytes(String bytes, byte[] raw) {
-        var opcode = Opcode.find(bytes);
+    private static Opcode bytesToOpcode(byte[] bytes) {
+        var hexStr = Numbers.bytesToHex(bytes);
+        LOGGER.debug("Reading bytes {}", hexStr);
+        var combined = Integer.parseInt(hexStr, 16);
+
+        var kind = Opcode.Kind.parseString(hexStr);
+        var args = parseArguments(kind, combined, hexStr);
+
+        return Opcode.create(hexStr, kind, args);
+    }
+
+    private static List<Argument> parseArguments(Opcode.Kind kind, int combinedBytes, String hexStr) {
         var args = new ArrayList<Argument>();
+        var argTypes = kind.getArgTypes();
 
-        for (var argType : opcode.opcodeArgTypes()) {
-            var value = switch (argType) {
-                case ADDRESS -> (((int) raw[0]) & 0x0F) + (((int) raw[1]) & 0xFF);
-                case CONSTANT -> (((int) raw[1]) & 0xFF);
-                case REGX -> (((int) raw[0]) & 0x0F);
-                case REGY -> (((int) raw[1]) & 0xF0);
-            };
-
-            args.add(Argument.of(argType, value));
+        for (var argType : argTypes) {
+            args.add(createArgument(argType, combinedBytes));
         }
 
-        return new Instruction(opcode, args);
+        LOGGER.debug("Registered {} args for opcode {} ({})", args.size(), hexStr, kind.getSymbol());
+        for (var arg : args) {
+            LOGGER.debug("{}: 0x{}", arg.getType(), Integer.toHexString(arg.getValue()));
+        }
+
+        return args;
+    }
+
+    private static Argument createArgument(Argument.Type argType, int combinedBytes) {
+        return switch (argType) {
+            case ADDRESS -> Argument.of(argType, combinedBytes & ADDRESS_MASK);
+            case CONSTANT_4 -> Argument.of(argType, combinedBytes & CONSTANT_4_MASK);
+            case CONSTANT_8 -> Argument.of(argType, combinedBytes & CONSTANT_8_MASK);
+            case REGISTER_X -> Argument.of(argType, (combinedBytes & REG_X_MASK) >> 8);
+            case REGISTER_Y -> Argument.of(argType, (combinedBytes & REG_Y_MASK) >> 4);
+        };
     }
 
 }
