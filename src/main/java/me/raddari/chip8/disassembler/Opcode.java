@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 public final class Opcode {
@@ -15,18 +16,25 @@ public final class Opcode {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Kind kind;
     private final List<Argument> args;
+    private final String bytes;
 
-    private Opcode(Kind kind, List<Argument> args) {
+    private Opcode(String bytes, Kind kind, List<Argument> args) {
+        this.bytes = bytes;
         this.kind = kind;
         this.args = args;
     }
 
-    public static @NotNull Opcode create(@NotNull Kind kind, @NotNull List<Argument> args) {
-        return new Opcode(kind, args);
+    public static @NotNull Opcode create(@NotNull String bytes, @NotNull Kind kind, @NotNull List<Argument> args) {
+        return new Opcode(bytes, kind, args);
     }
 
     public @NotNull String toAssemblyString() {
-        return kind.name();
+        var argJoiner = new StringJoiner(",");
+        for (var arg : args) {
+            var hex = Integer.toHexString(arg.getValue());
+            argJoiner.add(arg.getType().isRegister() ? "V" + hex : hex);
+        }
+        return String.format("$%s - %s %s", bytes, kind.getSymbol(), argJoiner.toString());
     }
 
     public @NotNull Kind getKind() {
