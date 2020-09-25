@@ -20,7 +20,7 @@
   },
   "separator": {
     "instruction": " ",
-    "arguments": ", "
+    "argument": ", "
   },
   "use_hex": {
     "constant": false,
