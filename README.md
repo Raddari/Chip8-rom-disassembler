@@ -4,6 +4,10 @@ Disassembler for Chip8 binary files
 ### Usage:
     java -jar Chip8-rom-disassembler.jar <rom-path>
 
+Alternatively, write a batch script which allows you to drag and drop the file, such as:
+
+    java -jar Chip8-rom-disassembler.jar %1
+
 ### Todo:
   - [x] Implement disassembler
   - [x] Add Command Line Interface
