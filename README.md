@@ -14,4 +14,5 @@ Alternatively, write a batch script which allows you to drag and drop the file, 
   - [ ] Add output formatting
     - [ ] With YAML configuration
   - [ ] Save output to file
+  - [ ] Documentation
   - [ ] QoL?
