@@ -8,6 +8,9 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+# Logger config
+log4j2.xml
+
 # Generated files
 .idea/**/contentModel.xml
 
