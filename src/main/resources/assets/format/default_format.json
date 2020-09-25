@@ -1,0 +1,35 @@
+{
+  "file_comment": "[FILE_NAME]",
+  "indent": {
+    "label": 0,
+    "instruction": 8
+  },
+  "prefix": {
+    "label": "",
+    "instruction": "",
+    "constant": "",
+    "address": "$",
+    "register": "V"
+  },
+  "suffix": {
+    "label": ":",
+    "instruction": "",
+    "constant": "",
+    "address": "",
+    "register": ""
+  },
+  "separator": {
+    "instruction": " ",
+    "arguments": ", "
+  },
+  "use_hex": {
+    "constant": false,
+    "address": true,
+    "register": true
+  },
+  "uppercase": {
+    "label": false,
+    "instruction": false,
+    "hex": true
+  }
+}
