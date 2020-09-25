@@ -65,13 +65,13 @@ final class AsyncDisassembler implements Disassembler {
 
     private static Opcode bytesToOpcode(byte[] bytes) {
         var hexStr = Numbers.bytesToHex(bytes);
-        LOGGER.debug("Read bytes {}", hexStr);
+        LOGGER.debug("Reading bytes {}", hexStr);
         var combined = Integer.parseInt(hexStr, 16);
 
         var kind = Opcode.Kind.parseString(hexStr);
         var args = parseArguments(kind, combined, hexStr);
 
-        return Opcode.create(kind, args);
+        return Opcode.create(hexStr, kind, args);
     }
 
     private static List<Argument> parseArguments(Opcode.Kind kind, int combinedBytes, String hexStr) {
@@ -84,7 +84,7 @@ final class AsyncDisassembler implements Disassembler {
 
         LOGGER.debug("Registered {} args for opcode {} ({})", args.size(), hexStr, kind.getSymbol());
         for (var arg : args) {
-            LOGGER.debug("{}: {}", arg.getType(), arg.getValue());
+            LOGGER.debug("{}: 0x{}", arg.getType(), Integer.toHexString(arg.getValue()));
         }
 
         return args;
@@ -95,8 +95,8 @@ final class AsyncDisassembler implements Disassembler {
             case ADDRESS -> Argument.of(argType, combinedBytes & ADDRESS_MASK);
             case CONSTANT_4 -> Argument.of(argType, combinedBytes & CONSTANT_4_MASK);
             case CONSTANT_8 -> Argument.of(argType, combinedBytes & CONSTANT_8_MASK);
-            case REGISTER_X -> Argument.of(argType, combinedBytes & REG_X_MASK);
-            case REGISTER_Y -> Argument.of(argType, combinedBytes & REG_Y_MASK);
+            case REGISTER_X -> Argument.of(argType, (combinedBytes & REG_X_MASK) >> 8);
+            case REGISTER_Y -> Argument.of(argType, (combinedBytes & REG_Y_MASK) >> 4);
         };
     }
 
