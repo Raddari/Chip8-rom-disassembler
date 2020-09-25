@@ -64,12 +64,12 @@ final class AsyncDisassembler implements Disassembler {
         var combined = Integer.parseInt(hexStr, 16);
 
         var kind = Opcode.Kind.parseString(hexStr);
-        var args = parseArguments(kind, combined);
+        var args = parseArguments(kind, combined, hexStr);
 
         return Opcode.create(kind, args);
     }
 
-    private static List<Argument> parseArguments(Opcode.Kind kind, int combinedBytes) {
+    private static List<Argument> parseArguments(Opcode.Kind kind, int combinedBytes, String hexStr) {
         var args = new ArrayList<Argument>();
         var argTypes = kind.getArgTypes();
         var values = OpcodeValues.generateFrom(combinedBytes);
@@ -78,7 +78,7 @@ final class AsyncDisassembler implements Disassembler {
             args.add(createArgument(argType, values));
         }
 
-        LOGGER.debug("Registered {} args for opcode {}", args.size(), kind);
+        LOGGER.debug("Registered {} args for opcode {} ({})", args.size(), hexStr, kind.getSymbol());
         for (var arg : args) {
             LOGGER.debug("{}: {}", arg.getType(), arg.getValue());
         }
