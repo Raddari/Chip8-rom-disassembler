@@ -54,7 +54,20 @@ public final class Argument {
     }
 
     public enum Type {
-        ADDRESS, CONSTANT_4, CONSTANT_8, REGISTER_X, REGISTER_Y
+        ADDRESS, CONSTANT_4, CONSTANT_8, REGISTER_X, REGISTER_Y;
+
+        public boolean isAddress() {
+            return this == ADDRESS;
+        }
+
+        public boolean isConstant() {
+            return this == CONSTANT_4 || this == CONSTANT_8;
+        }
+
+        public boolean isRegister() {
+            return this == REGISTER_X || this == REGISTER_Y;
+        }
+
     }
 
 }
