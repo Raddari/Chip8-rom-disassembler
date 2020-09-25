@@ -13,4 +13,5 @@ Alternatively, write a batch script which allows you to drag and drop the file, 
   - [x] Add Command Line Interface
   - [ ] Add output formatting
     - [ ] With YAML configuration
+  - [ ] Save output to file
   - [ ] QoL?
