@@ -107,6 +107,7 @@ public final class Opcode {
                     return op;
                 }
             }
+            LOGGER.warn("No matching opcode for {}", string);
             return $0000;
         }
 
