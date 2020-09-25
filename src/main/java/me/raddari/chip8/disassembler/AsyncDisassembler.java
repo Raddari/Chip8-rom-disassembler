@@ -17,6 +17,11 @@ import java.util.List;
 final class AsyncDisassembler implements Disassembler {
 
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int ADDRESS_MASK = 0x0FFF;
+    private static final int CONSTANT_8_MASK = 0x00FF;
+    private static final int CONSTANT_4_MASK = 0x000F;
+    private static final int REG_X_MASK = 0x0F00;
+    private static final int REG_Y_MASK = 0x00F0;
 
     @Override
     public @NotNull List<Opcode> disassemble(@NotNull File romFile) {
@@ -72,10 +77,9 @@ final class AsyncDisassembler implements Disassembler {
     private static List<Argument> parseArguments(Opcode.Kind kind, int combinedBytes, String hexStr) {
         var args = new ArrayList<Argument>();
         var argTypes = kind.getArgTypes();
-        var values = OpcodeValues.generateFrom(combinedBytes);
 
         for (var argType : argTypes) {
-            args.add(createArgument(argType, values));
+            args.add(createArgument(argType, combinedBytes));
         }
 
         LOGGER.debug("Registered {} args for opcode {} ({})", args.size(), hexStr, kind.getSymbol());
@@ -86,41 +90,14 @@ final class AsyncDisassembler implements Disassembler {
         return args;
     }
 
-    private static Argument createArgument(Argument.Type argType, OpcodeValues opcodeValues) {
+    private static Argument createArgument(Argument.Type argType, int combinedBytes) {
         return switch (argType) {
-            case ADDRESS -> Argument.of(argType, opcodeValues.address);
-            case CONSTANT_4 -> Argument.of(argType, opcodeValues.constant4);
-            case CONSTANT_8 -> Argument.of(argType, opcodeValues.constant8);
-            case REGISTER_X -> Argument.of(argType, opcodeValues.regX);
-            case REGISTER_Y -> Argument.of(argType, opcodeValues.regY);
+            case ADDRESS -> Argument.of(argType, combinedBytes & ADDRESS_MASK);
+            case CONSTANT_4 -> Argument.of(argType, combinedBytes & CONSTANT_4_MASK);
+            case CONSTANT_8 -> Argument.of(argType, combinedBytes & CONSTANT_8_MASK);
+            case REGISTER_X -> Argument.of(argType, combinedBytes & REG_X_MASK);
+            case REGISTER_Y -> Argument.of(argType, combinedBytes & REG_Y_MASK);
         };
-    }
-
-    private static final class OpcodeValues {
-
-        final int address;
-        final int constant4;
-        final int constant8;
-        final int regX;
-        final int regY;
-
-        OpcodeValues(int address, int constant4, int constant8, int regX, int regY) {
-            this.address = address;
-            this.constant4 = constant4;
-            this.constant8 = constant8;
-            this.regX = regX;
-            this.regY = regY;
-        }
-
-        static @NotNull OpcodeValues generateFrom(int opcodeBytes) {
-            var address = opcodeBytes & 0x0FFF;
-            var constant4 = opcodeBytes & 0x000F;
-            var constant8 = opcodeBytes & 0x00FF;
-            var regX = opcodeBytes & 0x0F00;
-            var regY = opcodeBytes & 0x00F0;
-            return new OpcodeValues(address, constant4, constant8, regX, regY);
-        }
-
     }
 
 }
