@@ -26,7 +26,7 @@ final class AsyncDisassembler implements Disassembler {
     @Override
     public @NotNull List<Opcode> disassemble(@NotNull File romFile) {
         if (!romFile.isFile()) {
-            LOGGER.error("romFile {} must point to a valid file", romFile.getPath());
+            LOGGER.error("romFile {} must point to a valid file", romFile.getAbsolutePath());
             return Collections.emptyList();
         }
         var opcodes = new ArrayList<Opcode>();
