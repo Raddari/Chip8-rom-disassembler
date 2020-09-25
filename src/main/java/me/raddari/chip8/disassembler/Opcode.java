@@ -8,9 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public final class Opcode {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Kind kind;
     private final List<Argument> args;
 
@@ -77,26 +79,40 @@ public final class Opcode {
         $8XY3("xor"), $8XY6("shr"), $8XYE("shl"),
         $FX33("bcd"), $CXNN("rnd"), $DXYN("drw");
 
-        private static final Logger LOGGER = LogManager.getLogger();
         private final String symbol;
         private final List<Argument.Type> argTypes;
+        private final Pattern opcodePattern;
 
         Kind(@NotNull String symbol) {
             this.symbol = symbol;
             this.argTypes = generateArgTypes();
+            this.opcodePattern = generateOpcodePattern();
         }
 
         public static @NotNull Kind parseString(@NotNull String string) {
+            if (string.isBlank()) {
+                LOGGER.warn("Blank op, returning nop");
+                return $0000;
+            }
             if (string.charAt(0) == '$') {
                 string = string.substring(1);
             }
-            string = string.toLowerCase();
+            string = string.toLowerCase().toUpperCase();
+
+            // TODO: O(n) - replace with more efficient matching
+            // ? lookup table?
+            for (var op : values()) {
+                if (op.opcodePattern.matcher(string).matches()) {
+                    LOGGER.debug("Matched {} to opcode {}", string, op);
+                    return op;
+                }
+            }
             return $0000;
         }
 
         private List<Argument.Type> generateArgTypes() {
             var args = new ArrayList<Argument.Type>();
-            var id = name().substring(1);
+            var id = name().substring(1).toUpperCase();
 
             if (id.contains("NNN")) {
                 args.add(Argument.Type.ADDRESS);
@@ -114,6 +130,15 @@ public final class Opcode {
             }
 
             return args;
+        }
+
+        private Pattern generateOpcodePattern() {
+            var id = name().substring(1).toUpperCase();
+            id = id.replaceAll("[NXY]", "[0-9a-f]");
+
+            var pattern = Pattern.compile(id, Pattern.CASE_INSENSITIVE);
+            LOGGER.debug("Generated opcode pattern {} for opcode {}", id, pattern);
+            return pattern;
         }
 
         public @NotNull String getSymbol() {
