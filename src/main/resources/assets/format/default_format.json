@@ -1,5 +1,5 @@
 {
-  "file_comment": "[FILE_NAME]",
+  "file_comment": "${FILE_NAME}",
   "indent": {
     "label": 0,
     "instruction": 8
