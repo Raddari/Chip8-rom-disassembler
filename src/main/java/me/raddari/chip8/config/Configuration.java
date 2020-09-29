@@ -7,6 +7,12 @@ import java.util.List;
 
 public interface Configuration {
 
+    @Nullable Object get(@NotNull String path);
+
+    @Nullable Object get(@NotNull String path, @Nullable Object def);
+
+    void set(@NotNull String path, @Nullable Object value);
+
     boolean isString(@NotNull String path);
 
     @Nullable String getString(@NotNull String path);
