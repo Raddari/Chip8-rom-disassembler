@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,8 +142,8 @@ public abstract class FileConfiguration implements Configuration {
     }
 
     @Override
-    public @Nullable <T> List<T> getList(@NotNull String path) {
-        return null;
+    public @NotNull <T> List<T> getList(@NotNull String path) {
+        return Collections.emptyList();
     }
 
     public String pathSeparator() {

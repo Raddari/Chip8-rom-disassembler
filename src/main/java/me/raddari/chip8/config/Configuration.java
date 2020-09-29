@@ -45,6 +45,14 @@ public interface Configuration {
 
     boolean isList(@NotNull String path);
 
-    <T> @Nullable List<T> getList(@NotNull String path);
+    /**
+     * Gets the configuration path as a list. If it does not exist as a
+     * list, return an empty list.
+     *
+     * @param path value path
+     * @param <T>  list type
+     * @return list of values at the given config path
+     */
+    <T> @NotNull List<T> getList(@NotNull String path);
 
 }
