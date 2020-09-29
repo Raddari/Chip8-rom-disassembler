@@ -17,7 +17,7 @@ public interface Configuration {
 
     @Nullable String getString(@NotNull String path);
 
-    @Nullable String getString(@NotNull String path, @NotNull String def);
+    @Nullable String getString(@NotNull String path, @Nullable String def);
 
     boolean isBoolean(@NotNull String path);
 
@@ -50,9 +50,12 @@ public interface Configuration {
      * list, return an empty list.
      *
      * @param path value path
-     * @param <T>  list type
      * @return list of values at the given config path
      */
-    <T> @NotNull List<T> getList(@NotNull String path);
+    @SuppressWarnings("java:S1452") // Wildcard return types
+    @NotNull List<?> getList(@NotNull String path);
+
+    @SuppressWarnings("java:S1452") // Wildcard return types
+    @NotNull List<?> getList(@NotNull String path, @NotNull List<?> def);
 
 }

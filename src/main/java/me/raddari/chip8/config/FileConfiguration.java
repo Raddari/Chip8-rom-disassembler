@@ -48,102 +48,116 @@ public abstract class FileConfiguration implements Configuration {
 
     @Override
     public @Nullable Object get(@NotNull String path) {
-        return null;
+        return get(path, null);
     }
 
     @Override
     public @Nullable Object get(@NotNull String path, @Nullable Object def) {
-        return null;
+        return pathMap.getOrDefault(path, def);
     }
 
     @Override
     public void set(@NotNull String path, @Nullable Object value) {
-
+        if (get(path) != null && value == null) {
+            pathMap.remove(path);
+        }
+        pathMap.put(path, value);
     }
 
     @Override
     public boolean isString(@NotNull String path) {
-        return false;
+        return get(path) instanceof String;
     }
 
     @Override
     public @Nullable String getString(@NotNull String path) {
-        return null;
+        return getString(path, null);
     }
 
     @Override
-    public @Nullable String getString(@NotNull String path, @NotNull String def) {
-        return null;
+    public @Nullable String getString(@NotNull String path, @Nullable String def) {
+        var value = get(path);
+        return value instanceof String ? (String) value : def;
     }
 
     @Override
     public boolean isBoolean(@NotNull String path) {
-        return false;
+        return get(path) instanceof Boolean;
     }
 
     @Override
     public boolean getBoolean(@NotNull String path) {
-        return false;
+        return getBoolean(path, false);
     }
 
     @Override
     public boolean getBoolean(@NotNull String path, boolean def) {
-        return false;
+        var value = get(path);
+        return value instanceof Boolean ? (Boolean) value : def;
     }
 
     @Override
     public boolean isInt(@NotNull String path) {
-        return false;
+        return get(path) instanceof Integer;
     }
 
     @Override
     public int getInt(@NotNull String path) {
-        return 0;
+        return getInt(path, 0);
     }
 
     @Override
     public int getInt(@NotNull String path, int def) {
-        return 0;
+        var value = get(path);
+        return value instanceof Number ? ((Number) value).intValue() : def;
     }
 
     @Override
     public boolean isLong(@NotNull String path) {
-        return false;
+        return get(path) instanceof Long;
     }
 
     @Override
     public long getLong(@NotNull String path) {
-        return 0;
+        return getLong(path, 0L);
     }
 
     @Override
     public long getLong(@NotNull String path, long def) {
-        return 0;
+        var value = get(path);
+        return value instanceof Number ? ((Number) value).longValue() : def;
     }
 
     @Override
     public boolean isDouble(@NotNull String path) {
-        return false;
+        return get(path) instanceof Double;
     }
 
     @Override
     public double getDouble(@NotNull String path) {
-        return 0;
+        return getDouble(path, 0.0D);
     }
 
     @Override
     public double getDouble(@NotNull String path, double def) {
-        return 0;
+        var value = get(path);
+        return value instanceof Number ? ((Number) value).doubleValue() : def;
     }
 
     @Override
     public boolean isList(@NotNull String path) {
-        return false;
+        return get(path) instanceof List<?>;
     }
 
     @Override
-    public @NotNull <T> List<T> getList(@NotNull String path) {
-        return Collections.emptyList();
+    public @NotNull List<?> getList(@NotNull String path) {
+        return getList(path, Collections.emptyList());
+    }
+
+    @Override
+    public @NotNull List<?> getList(@NotNull String path, @NotNull List<?> def) {
+        var value = get(path);
+        return value instanceof List<?> ? (List<?>) value : def;
     }
 
     public String pathSeparator() {
