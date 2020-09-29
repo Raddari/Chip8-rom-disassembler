@@ -12,5 +12,8 @@ Alternatively, write a batch script which allows you to drag and drop the file, 
   - [x] Implement disassembler
   - [x] Add Command Line Interface
   - [ ] Add output formatting
-    - [ ] With YAML configuration
+    - [ ] With ~~YAML~~ JSON configuration
+  - [ ] Save output to file
+  - [ ] Labels for memory addresses
+  - [ ] Documentation
   - [ ] QoL?
