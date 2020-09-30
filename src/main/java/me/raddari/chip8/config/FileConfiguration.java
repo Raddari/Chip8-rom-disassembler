@@ -15,10 +15,10 @@ import java.util.Map;
 public abstract class FileConfiguration implements Configuration {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private final String pathSeparator;
+    private final char pathSeparator;
     protected final Map<String, Object> pathMap;
 
-    protected FileConfiguration(@NotNull String pathSeparator) {
+    protected FileConfiguration(char pathSeparator) {
         this.pathSeparator = pathSeparator;
         pathMap = new LinkedHashMap<>();
     }
@@ -160,7 +160,7 @@ public abstract class FileConfiguration implements Configuration {
         return value instanceof List<?> ? (List<?>) value : def;
     }
 
-    public String pathSeparator() {
+    public char pathSeparator() {
         return pathSeparator;
     }
 
