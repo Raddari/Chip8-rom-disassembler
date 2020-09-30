@@ -1,0 +1,38 @@
+{
+  "address": {
+    "prefix": "$",
+    "suffix": "",
+    "use_hex": true
+  },
+  "constant": {
+    "prefix": "",
+    "suffix": "",
+    "use_hex": false
+  },
+  "register": {
+    "prefix": "V",
+    "suffix": "",
+    "use_hex": true
+  },
+  "argument": {
+    "separator": ","
+  },
+  "label": {
+    "prefix": "",
+    "suffix": ":",
+    "indent": 0,
+    "uppercase": false
+  },
+  "instruction": {
+    "prefix": "",
+    "suffix": "",
+    "indent": 8,
+    "uppercase": false
+  },
+  "opcode": {
+    "prefix": "$",
+    "suffix": " - ",
+    "prepend": true
+  },
+  "uppercase_hex": true
+}
