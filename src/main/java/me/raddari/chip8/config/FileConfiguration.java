@@ -15,7 +15,7 @@ import java.util.Map;
 public abstract class FileConfiguration implements Configuration {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private final char pathSeparator;
+    protected final char pathSeparator;
     protected final Map<String, Object> pathMap;
 
     protected FileConfiguration(char pathSeparator) {
@@ -158,10 +158,6 @@ public abstract class FileConfiguration implements Configuration {
     public @NotNull List<?> getList(@NotNull String path, @NotNull List<?> def) {
         var value = get(path);
         return value instanceof List<?> ? (List<?>) value : def;
-    }
-
-    public char pathSeparator() {
-        return pathSeparator;
     }
 
 }
