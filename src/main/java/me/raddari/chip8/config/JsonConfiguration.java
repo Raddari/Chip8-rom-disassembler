@@ -23,15 +23,15 @@ public final class JsonConfiguration extends FileConfiguration {
         var mapType = new TypeToken<Map<String, Object>>() {}.getType();
         Map<String, Object> configMap = gson.fromJson(contents, mapType);
         for (var entry : configMap.entrySet()) {
-            pullNestedValues("", entry.getKey(), entry.getValue(), pathMap);
+            pullNestedValues(entry.getValue(), "", entry.getKey(), pathMap, pathSeparator);
         }
     }
 
-    private void pullNestedValues(String parent, String key, Object value, Map<String, Object> dest) {
+    private static void pullNestedValues(Object value, String parent, String key, Map<String, Object> dest, char sep) {
         if (value instanceof Map) {
-            parent += key + pathSeparator;
+            parent += key + sep;
             for (var entry : ((Map<?, ?>) value).entrySet()) {
-                pullNestedValues(parent, (String) entry.getKey(), entry.getValue(), dest);
+                pullNestedValues(entry.getValue(), parent, (String) entry.getKey(), dest, sep);
             }
         } else {
             var path = parent + key;
