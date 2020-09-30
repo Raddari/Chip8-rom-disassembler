@@ -29,5 +29,10 @@
     "indent": 8,
     "uppercase": false
   },
+  "opcode": {
+    "prefix": "$",
+    "suffix": " - ",
+    "prepend": true
+  },
   "uppercase_hex": true
 }
