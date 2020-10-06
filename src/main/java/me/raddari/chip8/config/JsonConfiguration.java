@@ -19,12 +19,13 @@ public final class JsonConfiguration extends FileConfiguration {
     }
 
     @Override
-    public void loadFromString(@NotNull String contents) {
+    public JsonConfiguration loadFromString(@NotNull String contents) {
         var mapType = new TypeToken<Map<String, Object>>() {}.getType();
         Map<String, Object> configMap = gson.fromJson(contents, mapType);
         for (var entry : configMap.entrySet()) {
             pullNestedValues(entry.getValue(), "", entry.getKey(), pathMap, pathSeparator);
         }
+        return this;
     }
 
     private static void pullNestedValues(Object value, String parent, String key, Map<String, Object> dest, char sep) {

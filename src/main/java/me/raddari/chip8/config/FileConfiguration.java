@@ -23,9 +23,9 @@ public abstract class FileConfiguration implements Configuration {
         pathMap = new LinkedHashMap<>();
     }
 
-    public abstract void loadFromString(@NotNull String contents);
+    public abstract FileConfiguration loadFromString(@NotNull String contents);
 
-    public void load(@NotNull Reader reader) throws IOException {
+    public FileConfiguration load(@NotNull Reader reader) throws IOException {
         var br = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
         var builder = new StringBuilder();
 
@@ -33,17 +33,17 @@ public abstract class FileConfiguration implements Configuration {
             builder.append(line);
             builder.append("\n");
         }
-        loadFromString(builder.toString());
+        return loadFromString(builder.toString());
     }
 
-    public void load(@NotNull String filePath) throws IOException {
-        load(new File(filePath));
+    public FileConfiguration load(@NotNull String filePath) throws IOException {
+        return load(new File(filePath));
     }
 
-    public void load(@NotNull File file) throws IOException {
+    public FileConfiguration load(@NotNull File file) throws IOException {
         LOGGER.debug("Reading config file {}", file.getName());
         var stream = new FileInputStream(file);
-        load(new InputStreamReader(stream, Charset.defaultCharset()));
+        return load(new InputStreamReader(stream, Charset.defaultCharset()));
     }
 
     @Override
