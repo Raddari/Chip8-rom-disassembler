@@ -53,6 +53,7 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
             formatOpcodeBytes(line, builder);
             formatInstruction(line, builder);
             formatArguments(line, builder);
+            builder.append("\n");
         }
 
         return builder.toString();
