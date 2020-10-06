@@ -56,6 +56,12 @@ public final class Argument {
     public enum Type {
         ADDRESS, CONSTANT_4, CONSTANT_8, REGISTER_X, REGISTER_Y;
 
+        private final String configCategory;
+
+        Type() {
+            this.configCategory = generateConfigCategory();
+        }
+
         public boolean isAddress() {
             return this == ADDRESS;
         }
@@ -69,6 +75,10 @@ public final class Argument {
         }
 
         public @NotNull String configCategory() {
+            return configCategory;
+        }
+
+        private String generateConfigCategory() {
             var underscore = name().indexOf('_');
             return underscore > -1 ? name().substring(0, underscore) : name().toLowerCase();
         }
