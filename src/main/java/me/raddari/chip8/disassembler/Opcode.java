@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 public final class Opcode {
@@ -26,15 +25,6 @@ public final class Opcode {
 
     public static @NotNull Opcode create(@NotNull String bytes, @NotNull Kind kind, @NotNull List<Argument> args) {
         return new Opcode(bytes, kind, args);
-    }
-
-    public @NotNull String toAssemblyString() {
-        var argJoiner = new StringJoiner(",");
-        for (var arg : args) {
-            var hex = Integer.toHexString(arg.getValue());
-            argJoiner.add(arg.getType().isRegister() ? "V" + hex : hex);
-        }
-        return String.format("$%s - %s %s", bytes, kind.getSymbol(), argJoiner.toString());
     }
 
     public @NotNull String getOpcodeBytes() {
