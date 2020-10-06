@@ -80,7 +80,7 @@ public final class Argument {
 
         private String generateConfigCategory() {
             var underscore = name().indexOf('_');
-            return underscore > -1 ? name().substring(0, underscore) : name().toLowerCase();
+            return underscore > -1 ? name().substring(0, underscore).toLowerCase() : name().toLowerCase();
         }
 
     }
