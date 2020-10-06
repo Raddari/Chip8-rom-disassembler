@@ -47,7 +47,7 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
     @Override
     public @NotNull String formatToString(@NotNull Program program) {
         var builder = new StringBuilder();
-        builder.append(program.name()).append("\n");
+        builder.append("; ").append(program.name()).append("\n\n");
 
         for (var line : program.opcodes()) {
             formatOpcodeBytes(line, builder);
