@@ -37,6 +37,10 @@ public final class Opcode {
         return String.format("$%s - %s %s", bytes, kind.getSymbol(), argJoiner.toString());
     }
 
+    public @NotNull String getOpcodeBytes() {
+        return bytes;
+    }
+
     public @NotNull Kind getKind() {
         return kind;
     }
