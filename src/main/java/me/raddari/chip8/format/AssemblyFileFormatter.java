@@ -3,16 +3,39 @@ package me.raddari.chip8.format;
 import me.raddari.chip8.config.Configuration;
 import me.raddari.chip8.disassembler.Opcode;
 import me.raddari.chip8.disassembler.Program;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.StringJoiner;
 
 public final class AssemblyFileFormatter implements Formatter<Program> {
 
+    private static final Logger LOGGER = LogManager.getLogger();
     private Configuration formatConfig;
 
     public AssemblyFileFormatter(@NotNull Configuration formatConfig) {
         this.formatConfig = formatConfig;
+    }
+
+    public void formatToFile(@NotNull Program program, @NotNull File file) {
+        try {
+            if (!file.createNewFile()) {
+                LOGGER.warn("File {} already exists, will be overwritten!", file.getName());
+            }
+        } catch (IOException e) {
+            LOGGER.error("IOException occured creating file", e);
+            return;
+        }
+
+        try (var writer = new FileWriter(file)) {
+            writer.append(formatToString(program));
+        } catch (IOException e) {
+            LOGGER.error("IOException occured writing to file", e);
+        }
     }
 
     @Override
