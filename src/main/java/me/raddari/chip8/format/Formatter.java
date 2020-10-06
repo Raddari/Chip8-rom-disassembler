@@ -17,7 +17,7 @@ public interface Formatter<T> {
      * @param object instance to format
      * @return string formatted {@link T}
      */
-    @NotNull String formatToString(T object);
+    @NotNull String formatToString(@NotNull T object);
 
     /**
      * Uses the given configuration for formatting rules.

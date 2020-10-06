@@ -45,7 +45,7 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
     }
 
     @Override
-    public @NotNull String formatToString(Program program) {
+    public @NotNull String formatToString(@NotNull Program program) {
         var builder = new StringBuilder();
         builder.append(program.name()).append("\n");
 
