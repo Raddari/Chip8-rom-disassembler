@@ -6,8 +6,10 @@ import me.raddari.chip8.format.AssemblyFileFormatter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public final class Main {
 
@@ -19,10 +21,10 @@ public final class Main {
             return;
         }
 
-        var formatConfigFile = new File(
-                Main.class.getClassLoader().getResource("assets/format/default.json").getPath());
         try {
-            var config = new JsonConfiguration().load(formatConfigFile);
+            var configStream = Main.class.getResourceAsStream("/assets/format/default.json");
+            var configReader = new BufferedReader(new InputStreamReader(configStream));
+            var config = new JsonConfiguration().load(configReader);
             var formatter = new AssemblyFileFormatter(config);
             var romFile = new File(args[0]);
 
