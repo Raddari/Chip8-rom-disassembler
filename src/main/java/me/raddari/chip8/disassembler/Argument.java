@@ -68,6 +68,11 @@ public final class Argument {
             return this == REGISTER_X || this == REGISTER_Y;
         }
 
+        public @NotNull String configCategory() {
+            var underscore = name().indexOf('_');
+            return underscore > -1 ? name().substring(0, underscore) : name().toLowerCase();
+        }
+
     }
 
 }
