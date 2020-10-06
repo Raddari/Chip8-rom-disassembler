@@ -19,8 +19,8 @@ public final class Main {
         var romFile = new File(args[0]);
         if (romFile.isFile()) {
             var program = Disassembler.create().disassemble(romFile);
-            System.out.println(program.getName());
-            for (var line : program.getOpcodes()) {
+            System.out.println(program.name());
+            for (var line : program.opcodes()) {
                 System.out.println(line.toAssemblyString());
             }
         } else {

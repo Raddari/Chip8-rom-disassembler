@@ -14,11 +14,11 @@ public final class Program {
         this.opcodes = List.copyOf(opcodes);
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public List<Opcode> getOpcodes() {
+    public List<Opcode> opcodes() {
         return List.copyOf(opcodes);
     }
 
