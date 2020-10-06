@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 final class AsyncDisassembler implements Disassembler {
@@ -24,11 +23,12 @@ final class AsyncDisassembler implements Disassembler {
     private static final int REG_Y_MASK = 0x00F0;
 
     @Override
-    public @NotNull List<Opcode> disassemble(@NotNull File romFile) {
+    public @NotNull Program disassemble(@NotNull File romFile) {
         if (!romFile.isFile()) {
-            LOGGER.error("romFile {} must point to a valid file", romFile.getAbsolutePath());
-            return Collections.emptyList();
+            LOGGER.error("Rom file {} must point to a valid file", romFile.getAbsolutePath());
+            throw new IllegalArgumentException("Invalid rom file");
         }
+        final var name = romFile.getName();
         var opcodes = new ArrayList<Opcode>();
         var ioThread = new Thread(() -> readData(opcodes, romFile), "IOThread");
         LOGGER.info("Reading {}", romFile.getName());
@@ -48,7 +48,7 @@ final class AsyncDisassembler implements Disassembler {
 
         var elapsed = stopwatch.elapsed();
         LOGGER.info("Read {} opcodes in {} millis", opcodes.size(), elapsed.toMillis());
-        return opcodes;
+        return new Program(name, opcodes);
     }
 
     private static void readData(List<? super Opcode> dest, File romFile) {
@@ -83,8 +83,10 @@ final class AsyncDisassembler implements Disassembler {
         }
 
         LOGGER.debug("Registered {} args for opcode {} ({})", args.size(), hexStr, kind.getSymbol());
-        for (var arg : args) {
-            LOGGER.debug("{}: 0x{}", arg.getType(), Integer.toHexString(arg.getValue()));
+        if (LOGGER.isDebugEnabled()) {
+            for (var arg : args) {
+                LOGGER.debug("{}: 0x{}", arg.getType(), Integer.toHexString(arg.getValue()));
+            }
         }
 
         return args;

@@ -34,5 +34,6 @@
     "suffix": " - ",
     "prepend": true
   },
-  "uppercase_hex": true
+  "uppercase_hex": true,
+  "use_labels": false
 }
