@@ -33,7 +33,6 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
 
         try (var writer = new FileWriter(file)) {
             writer.append(formatToString(program));
-            writer.append("\n");
             LOGGER.info("Wrote program to {}", file.getName());
         } catch (IOException e) {
             LOGGER.error("IOException occured writing to file", e);
