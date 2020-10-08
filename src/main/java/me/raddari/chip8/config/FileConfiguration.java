@@ -7,9 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class FileConfiguration implements Configuration {
@@ -70,12 +68,12 @@ public abstract class FileConfiguration implements Configuration {
     }
 
     @Override
-    public @Nullable String getString(@NotNull String path) {
-        return getString(path, null);
+    public @NotNull String getString(@NotNull String path) {
+        return getString(path, "");
     }
 
     @Override
-    public @Nullable String getString(@NotNull String path, @Nullable String def) {
+    public @NotNull String getString(@NotNull String path, @NotNull String def) {
         var value = get(path);
         return value instanceof String ? (String) value : def;
     }
@@ -142,22 +140,6 @@ public abstract class FileConfiguration implements Configuration {
     public double getDouble(@NotNull String path, double def) {
         var value = get(path);
         return value instanceof Number ? ((Number) value).doubleValue() : def;
-    }
-
-    @Override
-    public boolean isList(@NotNull String path) {
-        return get(path) instanceof List<?>;
-    }
-
-    @Override
-    public @NotNull List<?> getList(@NotNull String path) {
-        return getList(path, Collections.emptyList());
-    }
-
-    @Override
-    public @NotNull List<?> getList(@NotNull String path, @NotNull List<?> def) {
-        var value = get(path);
-        return value instanceof List<?> ? (List<?>) value : def;
     }
 
 }
