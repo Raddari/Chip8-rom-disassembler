@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public final class JsonConfiguration extends FileConfiguration {
+public final class JsonConfiguration extends MemoryConfiguration {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
