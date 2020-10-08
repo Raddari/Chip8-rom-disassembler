@@ -39,6 +39,10 @@ public final class Opcode {
         return List.copyOf(args);
     }
 
+    public boolean hasJump() {
+        return kind == Kind.$1NNN || kind == Kind.$2NNN;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
