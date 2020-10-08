@@ -15,10 +15,10 @@ import java.util.StringJoiner;
 public final class AssemblyFileFormatter implements Formatter<Program> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private Configuration formatConfig;
+    private Configuration config;
 
-    public AssemblyFileFormatter(@NotNull Configuration formatConfig) {
-        this.formatConfig = formatConfig;
+    public AssemblyFileFormatter(@NotNull Configuration config) {
+        this.config = config;
     }
 
     public void formatToFile(@NotNull Program program, @NotNull File file) {
@@ -41,7 +41,7 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
 
     @Override
     public @NotNull Formatter<Program> useConfiguration(@NotNull Configuration config) {
-        this.formatConfig = config;
+        this.config = config;
         return this;
     }
 
@@ -61,12 +61,12 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
     }
 
     private void formatOpcodeBytes(Opcode line, StringBuilder builder) {
-        if (formatConfig.getBoolean("opcode.prepend")) {
-            builder.append(formatConfig.getString("opcode.prefix"));
+        if (config.getBoolean("formatter.opcode.prepend")) {
+            builder.append(config.getString("formatter.opcode.prefix"));
             var bytes = line.getOpcodeBytes();
-            bytes = formatConfig.getBoolean("uppercase_hex") ? bytes.toUpperCase() : bytes.toLowerCase();
+            bytes = config.getBoolean("formatter.uppercase_hex") ? bytes.toUpperCase() : bytes.toLowerCase();
             builder.append(bytes);
-            builder.append(formatConfig.getString("opcode.suffix"));
+            builder.append(config.getString("formatter.opcode.suffix"));
         }
     }
 
@@ -78,15 +78,15 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
     }
 
     private void formatArguments(Opcode line, StringBuilder builder) {
-        var argJoiner = new StringJoiner(formatConfig.getString("argument.separator"));
+        var argJoiner = new StringJoiner(config.getString("formatter.argument.separator"));
 
         for (var arg : line.getArgs()) {
             var configCategory = arg.getType().configCategory();
-            var upperHex = formatConfig.getBoolean("uppercase_hex");
+            var upperHex = config.getBoolean("formatter.uppercase_hex");
 
-            var prefix = formatConfig.getString(String.format("%s.prefix", configCategory));
-            var suffix = formatConfig.getString(String.format("%s.suffix", configCategory));
-            var useHex = formatConfig.getBoolean(String.format("%s.use_hex", configCategory));
+            var prefix = config.getString(String.format("formatter.%s.prefix", configCategory));
+            var suffix = config.getString(String.format("formatter.%s.suffix", configCategory));
+            var useHex = config.getBoolean(String.format("formatter.%s.use_hex", configCategory));
 
             var value = useHex ? Integer.toHexString(arg.getValue()) : String.valueOf(arg.getValue());
             if (useHex) {
