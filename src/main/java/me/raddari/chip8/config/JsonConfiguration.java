@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public final class JsonConfiguration extends FileConfiguration {
+public final class JsonConfiguration extends MemoryConfiguration {
 
     private static final Logger LOGGER = LogManager.getLogger();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -19,7 +19,7 @@ public final class JsonConfiguration extends FileConfiguration {
     }
 
     @Override
-    public JsonConfiguration loadFromString(@NotNull String contents) {
+    public @NotNull JsonConfiguration loadFromString(@NotNull String contents) {
         var mapType = new TypeToken<Map<String, Object>>() {}.getType();
         Map<String, Object> configMap = gson.fromJson(contents, mapType);
         for (var entry : configMap.entrySet()) {

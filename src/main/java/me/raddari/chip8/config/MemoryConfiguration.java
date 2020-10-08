@@ -7,25 +7,23 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-public abstract class FileConfiguration implements Configuration {
+public abstract class MemoryConfiguration implements Configuration {
 
     private static final Logger LOGGER = LogManager.getLogger();
     protected final char pathSeparator;
     protected final Map<String, Object> pathMap;
 
-    protected FileConfiguration(char pathSeparator) {
+    protected MemoryConfiguration(char pathSeparator) {
         this.pathSeparator = pathSeparator;
         pathMap = new LinkedHashMap<>();
     }
 
-    public abstract FileConfiguration loadFromString(@NotNull String contents);
+    public abstract @NotNull MemoryConfiguration loadFromString(@NotNull String contents);
 
-    public FileConfiguration load(@NotNull Reader reader) throws IOException {
+    public @NotNull MemoryConfiguration load(@NotNull Reader reader) throws IOException {
         var br = reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
         var builder = new StringBuilder();
 
@@ -36,11 +34,11 @@ public abstract class FileConfiguration implements Configuration {
         return loadFromString(builder.toString());
     }
 
-    public FileConfiguration load(@NotNull String filePath) throws IOException {
+    public @NotNull MemoryConfiguration load(@NotNull String filePath) throws IOException {
         return load(new File(filePath));
     }
 
-    public FileConfiguration load(@NotNull File file) throws IOException {
+    public @NotNull MemoryConfiguration load(@NotNull File file) throws IOException {
         LOGGER.debug("Reading config file {}", file.getName());
         var stream = new FileInputStream(file);
         return load(new InputStreamReader(stream, Charset.defaultCharset()));
@@ -70,12 +68,12 @@ public abstract class FileConfiguration implements Configuration {
     }
 
     @Override
-    public @Nullable String getString(@NotNull String path) {
-        return getString(path, null);
+    public @NotNull String getString(@NotNull String path) {
+        return getString(path, "");
     }
 
     @Override
-    public @Nullable String getString(@NotNull String path, @Nullable String def) {
+    public @NotNull String getString(@NotNull String path, @NotNull String def) {
         var value = get(path);
         return value instanceof String ? (String) value : def;
     }
@@ -142,22 +140,6 @@ public abstract class FileConfiguration implements Configuration {
     public double getDouble(@NotNull String path, double def) {
         var value = get(path);
         return value instanceof Number ? ((Number) value).doubleValue() : def;
-    }
-
-    @Override
-    public boolean isList(@NotNull String path) {
-        return get(path) instanceof List<?>;
-    }
-
-    @Override
-    public @NotNull List<?> getList(@NotNull String path) {
-        return getList(path, Collections.emptyList());
-    }
-
-    @Override
-    public @NotNull List<?> getList(@NotNull String path, @NotNull List<?> def) {
-        var value = get(path);
-        return value instanceof List<?> ? (List<?>) value : def;
     }
 
 }
