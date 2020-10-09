@@ -9,9 +9,9 @@ public final class Program {
 
     private final String name;
     private final List<Opcode> opcodes;
-    private final Map<String, Integer> labels;
+    private final Map<Integer, String> labels;
 
-    public Program(@NotNull String name, @NotNull List<Opcode> opcodes, @NotNull Map<String, Integer> labels) {
+    public Program(@NotNull String name, @NotNull List<Opcode> opcodes, @NotNull Map<Integer, String> labels) {
         this.name = name;
         this.opcodes = List.copyOf(opcodes);
         this.labels = Map.copyOf(labels);
@@ -25,7 +25,7 @@ public final class Program {
         return List.copyOf(opcodes);
     }
 
-    public Map<String, Integer> getLabels() {
+    public Map<Integer, String> getLabels() {
         return Map.copyOf(labels);
     }
 
