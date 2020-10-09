@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 final class AsyncDisassembler implements Disassembler {
 
@@ -30,7 +32,9 @@ final class AsyncDisassembler implements Disassembler {
         }
         final var name = romFile.getName();
         var opcodes = new ArrayList<Opcode>();
-        var ioThread = new Thread(() -> readData(opcodes, romFile), "IOThread");
+        var labels = new LinkedHashMap<String, Integer>();
+
+        var ioThread = new Thread(() -> readData(opcodes, labels, romFile), "IOThread");
         LOGGER.info("Reading {}", romFile.getName());
 
         var stopwatch = Stopwatch.createStarted();
@@ -48,18 +52,32 @@ final class AsyncDisassembler implements Disassembler {
 
         var elapsed = stopwatch.elapsed();
         LOGGER.info("Read {} opcodes in {} millis", opcodes.size(), elapsed.toMillis());
-        return new Program(name, opcodes);
+        return new Program(name, opcodes, labels);
     }
 
-    private static void readData(List<? super Opcode> dest, File romFile) {
+    private static void readData(List<? super Opcode> dest, Map<String, Integer> labels, File romFile) {
         try (var reader = new DataInputStream(new FileInputStream(romFile))) {
             var bytes = new byte[2];
+            var labelCount = 0;
+
             while (reader.read(bytes, 0, 2) > 0) {
                 var opcode = bytesToOpcode(bytes);
+                if (opcode.hasJump()) {
+                    addLabel(labels, opcode, labelCount++);
+                }
                 dest.add(opcode);
             }
         } catch (IOException e) {
             LOGGER.error("IOException occured reading file", e);
+        }
+    }
+
+    private static void addLabel(Map<String, Integer> labels, Opcode opcode, int labelNumber) {
+        var jpAddress = opcode.getArgs().get(0).getValue();
+        var label = String.format("L%s", labelNumber);
+        labels.put(label, jpAddress);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Added label {} => ${}", label, Integer.toHexString(jpAddress));
         }
     }
 
