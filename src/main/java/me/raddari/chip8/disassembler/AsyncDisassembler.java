@@ -32,7 +32,7 @@ final class AsyncDisassembler implements Disassembler {
         }
         final var name = romFile.getName();
         var opcodes = new ArrayList<Opcode>();
-        var labels = new LinkedHashMap<String, Integer>();
+        var labels = new LinkedHashMap<Integer, String>();
 
         var ioThread = new Thread(() -> readData(opcodes, labels, romFile), "IOThread");
         LOGGER.info("Reading {}", romFile.getName());
@@ -55,7 +55,7 @@ final class AsyncDisassembler implements Disassembler {
         return new Program(name, opcodes, labels);
     }
 
-    private static void readData(List<? super Opcode> dest, Map<String, Integer> labels, File romFile) {
+    private static void readData(List<? super Opcode> dest, Map<Integer, String> labels, File romFile) {
         try (var reader = new DataInputStream(new FileInputStream(romFile))) {
             var bytes = new byte[2];
             var labelCount = 0;
@@ -72,10 +72,10 @@ final class AsyncDisassembler implements Disassembler {
         }
     }
 
-    private static void addLabel(Map<String, Integer> labels, Opcode opcode, int labelNumber) {
+    private static void addLabel(Map<Integer, String> labels, Opcode opcode, int labelNumber) {
         var jpAddress = opcode.getArgs().get(0).getValue();
         var label = String.format("L%s", labelNumber);
-        labels.put(label, jpAddress);
+        labels.put(jpAddress, label);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Added label {} => ${}", label, Integer.toHexString(jpAddress));
         }
