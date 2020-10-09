@@ -59,11 +59,12 @@ final class AsyncDisassembler implements Disassembler {
         try (var reader = new DataInputStream(new FileInputStream(romFile))) {
             var bytes = new byte[2];
             var labelCount = 0;
+            labels.put(0x200, "start");
 
             while (reader.read(bytes, 0, 2) > 0) {
                 var opcode = bytesToOpcode(bytes);
-                if (opcode.hasJump()) {
-                    addLabel(labels, opcode, labelCount++);
+                if (opcode.hasJump() && addLabel(labels, opcode, labelCount)) {
+                    labelCount++;
                 }
                 dest.add(opcode);
             }
@@ -72,13 +73,19 @@ final class AsyncDisassembler implements Disassembler {
         }
     }
 
-    private static void addLabel(Map<Integer, String> labels, Opcode opcode, int labelNumber) {
+    private static boolean addLabel(Map<Integer, String> labels, Opcode opcode, int labelNumber) {
         var jpAddress = opcode.getArgs().get(0).getValue();
+        if (labels.containsKey(jpAddress)) {
+            return false;
+        }
+
         var label = String.format("L%s", labelNumber);
         labels.put(jpAddress, label);
+
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Added label {} => ${}", label, Integer.toHexString(jpAddress));
         }
+        return true;
     }
 
     private static Opcode bytesToOpcode(byte[] bytes) {
