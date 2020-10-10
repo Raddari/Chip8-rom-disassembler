@@ -24,3 +24,4 @@ The keys in the config file are all the valid options supported (currently just 
   - [ ] Default config values
   - [ ] Documentation
   - [ ] QoL?
+  - [ ] GUI?
