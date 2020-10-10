@@ -35,7 +35,7 @@
     "opcode": {
       "prefix": "$",
       "suffix": " - ",
-      "prepend": true
+      "prepend": false
     }
   }
 }
