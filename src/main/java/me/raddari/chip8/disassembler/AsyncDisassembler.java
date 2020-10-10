@@ -74,7 +74,7 @@ final class AsyncDisassembler implements Disassembler {
     }
 
     private static boolean addLabel(Map<Integer, String> labels, Opcode opcode, int labelNumber) {
-        var jpAddress = opcode.getArgs().get(0).getValue();
+        var jpAddress = opcode.getArgs().get(0).value();
         if (labels.containsKey(jpAddress)) {
             return false;
         }
@@ -110,7 +110,7 @@ final class AsyncDisassembler implements Disassembler {
         LOGGER.debug("Registered {} args for opcode {} ({})", args.size(), hexStr, kind.getSymbol());
         if (LOGGER.isDebugEnabled()) {
             for (var arg : args) {
-                LOGGER.debug("{}: 0x{}", arg.getType(), Integer.toHexString(arg.getValue()));
+                LOGGER.debug("{}: 0x{}", arg.type(), Integer.toHexString(arg.value()));
             }
         }
 
