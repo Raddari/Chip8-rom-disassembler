@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 final class AsyncDisassembler implements Disassembler {
 
@@ -30,7 +32,9 @@ final class AsyncDisassembler implements Disassembler {
         }
         final var name = romFile.getName();
         var opcodes = new ArrayList<Opcode>();
-        var ioThread = new Thread(() -> readData(opcodes, romFile), "IOThread");
+        var labels = new LinkedHashMap<Integer, String>();
+
+        var ioThread = new Thread(() -> readData(opcodes, labels, romFile), "IOThread");
         LOGGER.info("Reading {}", romFile.getName());
 
         var stopwatch = Stopwatch.createStarted();
@@ -48,19 +52,40 @@ final class AsyncDisassembler implements Disassembler {
 
         var elapsed = stopwatch.elapsed();
         LOGGER.info("Read {} opcodes in {} millis", opcodes.size(), elapsed.toMillis());
-        return new Program(name, opcodes);
+        return new Program(name, opcodes, labels);
     }
 
-    private static void readData(List<? super Opcode> dest, File romFile) {
+    private static void readData(List<? super Opcode> dest, Map<Integer, String> labels, File romFile) {
         try (var reader = new DataInputStream(new FileInputStream(romFile))) {
             var bytes = new byte[2];
+            var labelCount = 0;
+            labels.put(0x200, "start");
+
             while (reader.read(bytes, 0, 2) > 0) {
                 var opcode = bytesToOpcode(bytes);
+                if (opcode.hasJump() && addLabel(labels, opcode, labelCount)) {
+                    labelCount++;
+                }
                 dest.add(opcode);
             }
         } catch (IOException e) {
             LOGGER.error("IOException occured reading file", e);
         }
+    }
+
+    private static boolean addLabel(Map<Integer, String> labels, Opcode opcode, int labelNumber) {
+        var jpAddress = opcode.getArgs().get(0).value();
+        if (labels.containsKey(jpAddress)) {
+            return false;
+        }
+
+        var label = String.format("L%s", labelNumber);
+        labels.put(jpAddress, label);
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Added label {} => ${}", label, Integer.toHexString(jpAddress));
+        }
+        return true;
     }
 
     private static Opcode bytesToOpcode(byte[] bytes) {
@@ -85,7 +110,7 @@ final class AsyncDisassembler implements Disassembler {
         LOGGER.debug("Registered {} args for opcode {} ({})", args.size(), hexStr, kind.getSymbol());
         if (LOGGER.isDebugEnabled()) {
             for (var arg : args) {
-                LOGGER.debug("{}: 0x{}", arg.getType(), Integer.toHexString(arg.getValue()));
+                LOGGER.debug("{}: 0x{}", arg.type(), Integer.toHexString(arg.value()));
             }
         }
 
