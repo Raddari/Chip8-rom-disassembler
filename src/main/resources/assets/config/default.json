@@ -1,7 +1,7 @@
 {
   "formatter": {
     "uppercase_hex": true,
-    "use_labels": false,
+    "use_labels": true,
     "address": {
       "prefix": "$",
       "suffix": "",
