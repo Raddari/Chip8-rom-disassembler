@@ -21,7 +21,7 @@ public final class Main {
 
         try {
             var config = getCustomConfiguration();
-            var formatter = new AssemblyFileFormatter(config);
+            var formatter = AssemblyFileFormatter.withConfig(config);
             var romFile = new File(args[0]);
 
             if (romFile.isFile()) {

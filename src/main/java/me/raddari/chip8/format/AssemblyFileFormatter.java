@@ -18,8 +18,12 @@ public final class AssemblyFileFormatter implements Formatter<Program> {
     private static final Logger LOGGER = LogManager.getLogger();
     private Configuration config;
 
-    public AssemblyFileFormatter(@NotNull Configuration config) {
+    private AssemblyFileFormatter(@NotNull Configuration config) {
         this.config = config;
+    }
+
+    public static @NotNull AssemblyFileFormatter withConfig(@NotNull Configuration config) {
+        return new AssemblyFileFormatter(config);
     }
 
     public void formatToFile(@NotNull Program program, @NotNull File file) {
