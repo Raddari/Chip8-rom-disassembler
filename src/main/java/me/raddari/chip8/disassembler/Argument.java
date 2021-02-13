@@ -32,7 +32,7 @@ public final class Argument {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Argument)) {
             return false;
         }
         final Argument argument = (Argument) o;

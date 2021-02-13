@@ -48,7 +48,7 @@ public final class Opcode {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Opcode)) {
             return false;
         }
         final Opcode opcode = (Opcode) o;
